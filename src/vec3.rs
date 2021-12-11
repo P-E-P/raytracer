@@ -1,16 +1,13 @@
 use std::fmt;
 use std::ops::{Add, AddAssign, Div, DivAssign, Index, IndexMut, Mul, MulAssign, Neg, Sub};
 
-type Point3 = Vec3;
-type Color = Vec3;
-
 #[derive(Copy, Clone)]
-struct Vec3 {
+pub struct Vec3 {
     e: [f64; 3],
 }
 
 impl Vec3 {
-    fn new(x: f64, y: f64, z: f64) -> Self {
+    pub fn new(x: f64, y: f64, z: f64) -> Self {
         Vec3 { e: [x, y, z] }
     }
 
@@ -18,19 +15,19 @@ impl Vec3 {
         self.e[0] * self.e[0] + self.e[1] * self.e[1] + self.e[2] * self.e[2]
     }
 
-    fn len(&self) -> f64 {
+    pub fn len(&self) -> f64 {
         self.length_squared().sqrt()
     }
 
-    fn x(&self) -> f64 {
+    pub fn x(&self) -> f64 {
         self.e[0]
     }
 
-    fn y(&self) -> f64 {
+    pub fn y(&self) -> f64 {
         self.e[1]
     }
 
-    fn z(&self) -> f64 {
+    pub fn z(&self) -> f64 {
         self.e[2]
     }
 }

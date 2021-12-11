@@ -1,3 +1,9 @@
+use crate::vec3::Vec3;
+
+type Point3 = Vec3;
+type Color = Vec3;
+
+
 mod vec3;
 
 fn main() {
@@ -8,15 +14,17 @@ fn main() {
     for j in (0..height).rev() {
         eprintln!("Scanline remaining: {}", j);
         for i in 0..width {
-            let r = i as f64 / (width - 1) as f64;
-            let g = j as f64 / (height - 1) as f64;
-            let b = 0.25;
-
-            let ir = (255.999 * r) as usize;
-            let ig = (255.999 * g) as usize;
-            let ib = (255.999 * b) as usize;
-
-            println!("{} {} {}\n", ir, ig, ib);
+            let pixel_color = Color::new(i as f64 / (width - 1) as f64, j as f64 / (height - 1) as f64, 0.25);
+            write_color(pixel_color);
         }
     }
+}
+
+fn write_color(color: Color) {
+    println!(
+        "{} {} {}",
+        (255.999 * color.x()) as usize,
+        (255.999 * color.y()) as usize,
+        (255.999 * color.z()) as usize
+    );
 }
