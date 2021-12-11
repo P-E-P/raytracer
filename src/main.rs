@@ -4,6 +4,7 @@ fn main() {
     println!("P3\n{} {}\n255\n", width, height);
 
     for j in (0..height).rev() {
+        eprintln!("Scanline remaining: {}", j);
         for i in 0..width {
             let r = i as f64 / (width - 1) as f64;
             let g = j as f64 / (height - 1) as f64;
