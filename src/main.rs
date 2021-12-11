@@ -1,3 +1,5 @@
+mod vec3;
+
 fn main() {
     let (width, height) = (256, 256);
 
