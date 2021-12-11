@@ -15,16 +15,16 @@ fn main() {
         eprintln!("Scanline remaining: {}", j);
         for i in 0..width {
             let pixel_color = Color::new(i as f64 / (width - 1) as f64, j as f64 / (height - 1) as f64, 0.25);
-            write_color(pixel_color);
+            println!("{}", colorize(pixel_color));
         }
     }
 }
 
-fn write_color(color: Color) {
-    println!(
+fn colorize(color: Color) -> String {
+    format!(
         "{} {} {}",
         (255.999 * color.x()) as usize,
         (255.999 * color.y()) as usize,
         (255.999 * color.z()) as usize
-    );
+    )
 }
