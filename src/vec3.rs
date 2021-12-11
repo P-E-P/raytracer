@@ -1,6 +1,9 @@
 use std::fmt;
 use std::ops::{Add, AddAssign, Div, DivAssign, Index, IndexMut, Mul, MulAssign, Neg, Sub};
 
+pub type Point3 = Vec3;
+pub type Color = Vec3;
+
 #[derive(Copy, Clone)]
 pub struct Vec3 {
     e: [f64; 3],
@@ -151,15 +154,15 @@ impl Div<f64> for Vec3 {
     }
 }
 
-fn unit_vector(v: Vec3) -> Vec3 {
+pub fn unit_vector(v: Vec3) -> Vec3 {
     v / v.len()
 }
 
-fn dot(u: Vec3, v: Vec3) -> f64 {
+pub fn dot(u: Vec3, v: Vec3) -> f64 {
     u.x() * v.x() + u.y() * v.y() + u.z() * v.z()
 }
 
-fn cross(u: Vec3, v: Vec3) -> Vec3 {
+pub fn cross(u: Vec3, v: Vec3) -> Vec3 {
     Vec3::new(
         u.y() * v.z() - u.z() * v.y(),
         u.z() * v.x() - u.x() * v.z(),
