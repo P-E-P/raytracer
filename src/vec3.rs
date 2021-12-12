@@ -8,21 +8,21 @@ pub type Color = Vec3;
 macro_rules! color {
     ($x:expr, $y:expr,$z:expr) => {
         crate::vec3::Color::new($x, $y, $z)
-    }
+    };
 }
 
 #[macro_export]
 macro_rules! point {
     ($x:expr, $y:expr,$z:expr) => {
         crate::vec3::Point3::new($x, $y, $z)
-    }
+    };
 }
 
 #[macro_export]
 macro_rules! vec3 {
     ($x:expr, $y:expr,$z:expr) => {
         crate::vec3::Vec3::new($x, $y, $z)
-    }
+    };
 }
 
 #[derive(Copy, Clone)]

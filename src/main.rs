@@ -1,7 +1,7 @@
-use ray::*;
-use vec3::*;
 use hit::{Hit, Hittable};
+use ray::*;
 use std::ops::RangeInclusive;
+use vec3::*;
 
 mod hit;
 mod ray;
@@ -77,7 +77,6 @@ fn hit_sphere(center: Point3, radius: f64, ray: Ray) -> f64 {
         (-half_b - discriminant.sqrt()) / a
     }
 }
-
 
 impl Hittable for Vec<Box<dyn Hittable>> {
     fn hit(&self, ray: Ray, range: RangeInclusive<f64>) -> Option<Hit> {
