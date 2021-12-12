@@ -7,6 +7,12 @@ pub struct Hit {
     t: f64,
 }
 
-trait Hittable {
-    fn hit(ray: Ray, t_min: f64, t_max: f64, rec: Hit) -> bool;
+impl Hit {
+    pub fn new(p: Point3, normal: Vec3, t: f64) -> Self {
+        Hit { p, normal, t }
+    }
+}
+
+pub trait Hittable {
+    fn hit(&self, ray: Ray, t_min: f64, t_max: f64) -> Option<Hit>;
 }

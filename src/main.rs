@@ -3,6 +3,7 @@ use vec3::*;
 
 mod hit;
 mod ray;
+mod sphere;
 mod vec3;
 
 fn main() {
