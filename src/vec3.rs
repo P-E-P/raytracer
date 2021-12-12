@@ -4,6 +4,27 @@ use std::ops::{Add, AddAssign, Div, DivAssign, Index, IndexMut, Mul, MulAssign, 
 pub type Point3 = Vec3;
 pub type Color = Vec3;
 
+#[macro_export]
+macro_rules! color {
+    ($x:expr, $y:expr,$z:expr) => {
+        crate::vec3::Color::new($x, $y, $z)
+    }
+}
+
+#[macro_export]
+macro_rules! point {
+    ($x:expr, $y:expr,$z:expr) => {
+        crate::vec3::Point3::new($x, $y, $z)
+    }
+}
+
+#[macro_export]
+macro_rules! vec3 {
+    ($x:expr, $y:expr,$z:expr) => {
+        crate::vec3::Vec3::new($x, $y, $z)
+    }
+}
+
 #[derive(Copy, Clone)]
 pub struct Vec3 {
     e: [f64; 3],
