@@ -3,6 +3,7 @@ use vec3::*;
 
 mod ray;
 mod vec3;
+mod hit;
 
 fn main() {
     // Image
