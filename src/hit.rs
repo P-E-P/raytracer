@@ -1,5 +1,5 @@
-use crate::vec3::*;
 use crate::ray::Ray;
+use crate::vec3::*;
 
 pub struct Hit {
     p: Point3,

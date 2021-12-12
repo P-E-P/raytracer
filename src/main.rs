@@ -1,9 +1,9 @@
 use ray::*;
 use vec3::*;
 
+mod hit;
 mod ray;
 mod vec3;
-mod hit;
 
 fn main() {
     // Image
@@ -44,8 +44,8 @@ fn main() {
 fn ray_color(ray: Ray) -> Color {
     let t = hit_sphere(Point3::new(0.0, 0.0, -1.0), 0.5, ray);
     if t > 0.0 {
-        let N = unit_vector(ray.at(t) - Vec3::new(0.0, 0.0, -1.0));
-        return 0.5 * Color::new(N.x() + 1.0, N.y() + 1.0, N.z() + 1.0);
+        let n = unit_vector(ray.at(t) - Vec3::new(0.0, 0.0, -1.0));
+        return 0.5 * Color::new(n.x() + 1.0, n.y() + 1.0, n.z() + 1.0);
     }
     let unit_direction = unit_vector(ray.direction());
     let t = 0.5 * (unit_direction.y() + 1.0);
@@ -70,6 +70,6 @@ fn hit_sphere(center: Point3, radius: f64, ray: Ray) -> f64 {
     if discriminant < 0.0 {
         -1.0
     } else {
-        (- half_b - discriminant.sqrt()) / a
+        (-half_b - discriminant.sqrt()) / a
     }
 }
