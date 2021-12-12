@@ -2,7 +2,7 @@ use crate::hit::Hit;
 use crate::hit::Hittable;
 use crate::ray::Ray;
 use crate::vec3::{dot, Point3};
-use std::ops::RangeBounds;
+use std::ops::RangeInclusive;
 
 struct Sphere {
     center: Point3,
@@ -16,7 +16,7 @@ impl Sphere {
 }
 
 impl Hittable for Sphere {
-    fn hit(&self, ray: Ray, range: impl RangeBounds<f64>) -> Option<Hit> {
+    fn hit(&self, ray: Ray, range: RangeInclusive<f64>) -> Option<Hit> {
         let oc = ray.origin() - self.center;
         let a = ray.direction().length_squared();
         let half_b = dot(oc, ray.direction());
@@ -35,13 +35,7 @@ impl Hittable for Sphere {
             }
         }
 
-        let mut result = Hit::new(
-            ray.at(root),
-            (ray.at(root) - self.center) / self.radius,
-            root,
-        );
         let outward_normal = (ray.at(root) - self.center) / self.radius;
-        result.set_face_normal(ray, outward_normal);
-        Some(result)
+        Some(Hit::new(ray.at(root), outward_normal, root, ray))
     }
 }
