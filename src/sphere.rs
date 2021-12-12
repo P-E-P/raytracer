@@ -28,9 +28,9 @@ impl Hittable for Sphere {
         let sqrtd = discriminant.sqrt();
 
         let mut root = (-half_b - sqrtd) / a;
-        if range.contains(&root) {
+        if !range.contains(&root) {
             root = (-half_b + sqrtd) / a;
-            if range.contains(&root) {
+            if !range.contains(&root) {
                 return None;
             }
         }
