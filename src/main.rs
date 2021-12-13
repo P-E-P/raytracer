@@ -80,13 +80,11 @@ fn hit_sphere(center: Point3, radius: f64, ray: Ray) -> f64 {
 
 impl Hittable for Vec<Box<dyn Hittable>> {
     fn hit(&self, ray: Ray, range: RangeInclusive<f64>) -> Option<Hit> {
-        let mut hit_anything = false;
         let mut closest_so_far = *range.end();
         let mut result = None;
 
         for object in self.iter() {
             if let Some(hit) = object.hit(ray, *range.start()..=closest_so_far) {
-                hit_anything = true;
                 closest_so_far = hit.t;
                 result = Some(hit);
             }
