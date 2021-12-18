@@ -1,4 +1,5 @@
-pub fn clamp<T>(input: T, min: T, max: T) -> T where
+pub fn clamp<T>(input: T, min: T, max: T) -> T
+where
     T: PartialOrd<T>,
 {
     if input < min {

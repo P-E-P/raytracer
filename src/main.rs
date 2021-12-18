@@ -1,10 +1,10 @@
-use rand::distributions::{Distribution, Uniform};
+use camera::Camera;
 use hit::{Hit, Hittable};
+use rand::distributions::{Distribution, Uniform};
 use ray::*;
 use sphere::Sphere;
 use std::ops::RangeInclusive;
 use vec3::*;
-use camera::Camera;
 
 mod hit;
 mod ray;
@@ -39,7 +39,7 @@ fn main() {
             let mut pixel_color = color!(0.0, 0.0, 0.0);
 
             for _ in 0..sample_per_pixel {
-                let u  = (i as f64 + dist.sample(&mut rng)) / (image_width - 1) as f64;
+                let u = (i as f64 + dist.sample(&mut rng)) / (image_width - 1) as f64;
                 let v = (j as f64 + dist.sample(&mut rng)) / (image_height - 1) as f64;
                 let ray = cam.get_ray(u, v);
                 pixel_color += ray_color(ray, &world);
