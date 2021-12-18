@@ -1,5 +1,6 @@
 use hit::{Hit, Hittable};
 use ray::*;
+use sphere::Sphere;
 use std::ops::RangeInclusive;
 use vec3::*;
 
@@ -14,6 +15,11 @@ fn main() {
     let aspect_ratio = 16.0 / 9.0;
     let image_width = 400;
     let image_height = (image_width as f64 / aspect_ratio) as usize;
+
+    // World
+    let mut world: Vec<Box<dyn Hittable>> = Vec::new();
+    world.push(Box::new(Sphere::new(point!(0.0, 0.0, -1.0), 0.5)));
+    world.push(Box::new(Sphere::new(point!(0.0, -100.5, -1.0), 100.0)));
 
     // Camera
     let viewport_height = 2.0;
@@ -38,18 +44,16 @@ fn main() {
                 origin,
                 lower_left_corner + u * horizontal + v * vertical - origin,
             );
-            let pixel_color = ray_color(r);
+            let pixel_color = ray_color(r, &world);
 
             println!("{}", colorize(pixel_color));
         }
     }
 }
 
-fn ray_color(ray: Ray) -> Color {
-    let t = hit_sphere(point!(0.0, 0.0, -1.0), 0.5, ray);
-    if t > 0.0 {
-        let n = unit_vector(ray.at(t) - vec3!(0.0, 0.0, -1.0));
-        return 0.5 * color!(n.x() + 1.0, n.y() + 1.0, n.z() + 1.0);
+fn ray_color(ray: Ray, world: &impl Hittable) -> Color {
+    if let Some(hit) = world.hit(ray, 0.0..=f64::INFINITY) {
+        return 0.5 * (hit.normal + color!(1.0, 1.0, 1.0));
     }
     let unit_direction = unit_vector(ray.direction());
     let t = 0.5 * (unit_direction.y() + 1.0);
@@ -63,19 +67,6 @@ fn colorize(color: Color) -> String {
         (255.999 * color.y()) as usize,
         (255.999 * color.z()) as usize
     )
-}
-
-fn hit_sphere(center: Point3, radius: f64, ray: Ray) -> f64 {
-    let oc = ray.origin() - center;
-    let a = ray.direction().length_squared();
-    let half_b = dot(oc, ray.direction());
-    let c = oc.length_squared() - radius * radius;
-    let discriminant = half_b * half_b - a * c;
-    if discriminant < 0.0 {
-        -1.0
-    } else {
-        (-half_b - discriminant.sqrt()) / a
-    }
 }
 
 impl Hittable for Vec<Box<dyn Hittable>> {

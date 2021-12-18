@@ -4,13 +4,13 @@ use crate::ray::Ray;
 use crate::vec3::{dot, Point3};
 use std::ops::RangeInclusive;
 
-struct Sphere {
+pub struct Sphere {
     center: Point3,
     radius: f64,
 }
 
 impl Sphere {
-    fn new(center: Point3, radius: f64) -> Self {
+    pub fn new(center: Point3, radius: f64) -> Self {
         Sphere { center, radius }
     }
 }
