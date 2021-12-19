@@ -60,6 +60,7 @@ impl Vec3 {
         }
     }
 
+    /// A (bad) diffuse renderer
     pub fn random_in_unit_sphere() -> Self {
         loop {
             let p = Vec3::delimited(-1.0..=1.0);
@@ -68,6 +69,11 @@ impl Vec3 {
             }
             return p;
         }
+    }
+
+    /// Accurate diffuse renderer.
+    pub fn random_unit() -> Self {
+        unit_vector(Self::random_in_unit_sphere())
     }
 
     pub fn length_squared(&self) -> f64 {
