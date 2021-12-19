@@ -71,6 +71,16 @@ impl Vec3 {
         }
     }
 
+    /// Intuitive diffuse renderer
+    pub fn random_in_hemisphere(normal: Vec3) -> Self {
+        let in_unit_sphere = Self::random_in_unit_sphere();
+        if dot(in_unit_sphere, normal) > 0.0 {
+            in_unit_sphere
+        } else {
+            -in_unit_sphere
+        }
+    }
+
     /// Accurate diffuse renderer.
     pub fn random_unit() -> Self {
         unit_vector(Self::random_in_unit_sphere())
