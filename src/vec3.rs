@@ -1,5 +1,6 @@
+use rand::distributions::{Distribution, Uniform};
 use std::fmt;
-use std::ops::{Add, AddAssign, Div, DivAssign, Index, IndexMut, Mul, MulAssign, Neg, Sub};
+use std::ops::{Add, AddAssign, Div, DivAssign, Index, IndexMut, Mul, MulAssign, Neg, Sub, RangeInclusive};
 
 pub type Point3 = Vec3;
 pub type Color = Vec3;
@@ -33,6 +34,40 @@ pub struct Vec3 {
 impl Vec3 {
     pub fn new(x: f64, y: f64, z: f64) -> Self {
         Vec3 { e: [x, y, z] }
+    }
+
+    pub fn random() -> Self {
+        let mut rng = rand::thread_rng();
+        let dist = Uniform::from(0.0..=1.0);
+        Vec3 {
+            e: [
+                dist.sample(&mut rng),
+                dist.sample(&mut rng),
+                dist.sample(&mut rng),
+            ],
+        }
+    }
+
+    pub fn delimited(range: RangeInclusive<f64>) -> Self {
+        let mut rng = rand::thread_rng();
+        let dist = Uniform::from(range);
+        Vec3 {
+            e: [
+                dist.sample(&mut rng),
+                dist.sample(&mut rng),
+                dist.sample(&mut rng),
+            ],
+        }
+    }
+
+    pub fn random_in_unit_sphere() -> Self {
+        loop {
+            let p = Vec3::delimited(-1.0..=1.0);
+            if p.length_squared() >= 1.0 {
+                continue;
+            }
+            return p;
+        }
     }
 
     pub fn length_squared(&self) -> f64 {

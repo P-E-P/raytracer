@@ -17,9 +17,10 @@ mod utils;
 fn main() {
     // Image
     let aspect_ratio = 16.0 / 9.0;
-    let image_width = 1080;
+    let image_width = 720;
     let image_height = (image_width as f64 / aspect_ratio) as usize;
-    let sample_per_pixel = 100;
+    let sample_per_pixel = 30;
+    let max_depth = 25;
 
     // World
     let mut world: Vec<Box<dyn Hittable>> = Vec::new();
@@ -42,7 +43,7 @@ fn main() {
                 let u = (i as f64 + dist.sample(&mut rng)) / (image_width - 1) as f64;
                 let v = (j as f64 + dist.sample(&mut rng)) / (image_height - 1) as f64;
                 let ray = cam.get_ray(u, v);
-                pixel_color += ray_color(ray, &world);
+                pixel_color += ray_color(ray, &world, max_depth);
             }
 
             println!("{}", colorize(pixel_color, sample_per_pixel));
@@ -50,9 +51,15 @@ fn main() {
     }
 }
 
-fn ray_color(ray: Ray, world: &impl Hittable) -> Color {
+fn ray_color(ray: Ray, world: &impl Hittable, depth: usize) -> Color {
+
+    if depth == 0 {
+        return color!(0.0, 0.0, 0.0);
+    }
+
     if let Some(hit) = world.hit(ray, 0.0..=f64::INFINITY) {
-        return 0.5 * (hit.normal + color!(1.0, 1.0, 1.0));
+        let target = hit.p + hit.normal + Vec3::random_in_unit_sphere();
+        return 0.5 * ray_color(Ray::new(hit.p, target - hit.p), world, depth - 1);
     }
     let unit_direction = unit_vector(ray.direction());
     let t = 0.5 * (unit_direction.y() + 1.0);
