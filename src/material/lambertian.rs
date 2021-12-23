@@ -1,7 +1,7 @@
 use super::Material;
+use crate::hit::Hit;
 use crate::ray::Ray;
 use crate::vec3::{Color, Vec3};
-use crate::hit::Hit;
 
 pub struct Lambertian {
     pub albedo: Color,

@@ -1,10 +1,10 @@
-use std::sync::Arc;
 use crate::hit::Hit;
 use crate::hit::Hittable;
 use crate::material::Material;
 use crate::ray::Ray;
 use crate::vec3::{dot, Point3};
 use std::ops::RangeInclusive;
+use std::sync::Arc;
 
 pub struct Sphere {
     center: Point3,

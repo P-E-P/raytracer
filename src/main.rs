@@ -1,13 +1,13 @@
-use std::sync::Arc;
 use camera::Camera;
 use hit::{Hit, Hittable};
+use material::lambertian::Lambertian;
+use material::metal::Metal;
 use rand::distributions::{Distribution, Uniform};
 use ray::*;
 use sphere::Sphere;
 use std::ops::RangeInclusive;
+use std::sync::Arc;
 use vec3::*;
-use material::lambertian::Lambertian;
-use material::metal::Metal;
 
 mod hit;
 mod ray;
@@ -28,11 +28,15 @@ fn main() {
 
     let material_ground = Arc::new(Lambertian::new(color!(0.8, 0.8, 0.0)));
     let material_center = Arc::new(Lambertian::new(color!(0.7, 0.3, 0.3)));
-    let material_left = Arc::new(Metal::new(color!(0.8, 0.8, 0.8)));
-    let material_right = Arc::new(Metal::new(color!(0.8, 0.6, 0.2)));
+    let material_left = Arc::new(Metal::new(color!(0.8, 0.8, 0.8), 0.3));
+    let material_right = Arc::new(Metal::new(color!(0.8, 0.6, 0.2), 1.0));
     // World
     let world: Vec<Box<dyn Hittable>> = vec![
-        Box::new(Sphere::new(point!(0.0, -100.5, -1.0), 100.0, material_ground)),
+        Box::new(Sphere::new(
+            point!(0.0, -100.5, -1.0),
+            100.0,
+            material_ground,
+        )),
         Box::new(Sphere::new(point!(0.0, 0.0, -1.0), 0.5, material_center)),
         Box::new(Sphere::new(point!(-1.0, 0.0, -1.0), 0.5, material_left)),
         Box::new(Sphere::new(point!(1.0, 0.0, -1.0), 0.5, material_right)),
@@ -70,7 +74,10 @@ fn ray_color(ray: Ray, world: &impl Hittable, depth: usize) -> Color {
     if let Some(hit) = world.hit(ray, 0.001..=f64::INFINITY) {
         let mut scattered = Ray::new(point!(0.0, 0.0, 0.0), vec3!(0.0, 0.0, 0.0));
         let mut attenuation = color!(0.0, 0.0, 0.0);
-        if hit.material.scatter(&ray, &hit, &mut attenuation, &mut scattered) {
+        if hit
+            .material
+            .scatter(&ray, &hit, &mut attenuation, &mut scattered)
+        {
             return attenuation * ray_color(scattered, world, depth - 1);
         }
         return color!(0.0, 0.0, 0.0);

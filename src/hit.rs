@@ -1,8 +1,8 @@
-use std::sync::Arc;
 use crate::material::Material;
 use crate::ray::Ray;
 use crate::vec3::*;
 use std::ops::RangeInclusive;
+use std::sync::Arc;
 
 pub struct Hit {
     pub p: Point3,
