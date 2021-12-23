@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use camera::Camera;
 use hit::{Hit, Hittable};
 use rand::distributions::{Distribution, Uniform};
@@ -5,6 +6,8 @@ use ray::*;
 use sphere::Sphere;
 use std::ops::RangeInclusive;
 use vec3::*;
+use material::lambertian::Lambertian;
+use material::metal::Metal;
 
 mod hit;
 mod ray;
@@ -12,20 +15,27 @@ mod sphere;
 #[macro_use]
 mod vec3;
 mod camera;
+mod material;
 mod utils;
 
 fn main() {
     // Image
     let aspect_ratio = 16.0 / 9.0;
-    let image_width = 480;
+    let image_width = 1080;
     let image_height = (image_width as f64 / aspect_ratio) as usize;
-    let sample_per_pixel = 30;
-    let max_depth = 10;
+    let sample_per_pixel = 50;
+    let max_depth = 20;
 
+    let material_ground = Arc::new(Lambertian::new(color!(0.8, 0.8, 0.0)));
+    let material_center = Arc::new(Lambertian::new(color!(0.7, 0.3, 0.3)));
+    let material_left = Arc::new(Metal::new(color!(0.8, 0.8, 0.8)));
+    let material_right = Arc::new(Metal::new(color!(0.8, 0.6, 0.2)));
     // World
     let world: Vec<Box<dyn Hittable>> = vec![
-        Box::new(Sphere::new(point!(0.0, 0.0, -1.0), 0.5)),
-        Box::new(Sphere::new(point!(0.0, -100.5, -1.0), 100.0)),
+        Box::new(Sphere::new(point!(0.0, -100.5, -1.0), 100.0, material_ground)),
+        Box::new(Sphere::new(point!(0.0, 0.0, -1.0), 0.5, material_center)),
+        Box::new(Sphere::new(point!(-1.0, 0.0, -1.0), 0.5, material_left)),
+        Box::new(Sphere::new(point!(1.0, 0.0, -1.0), 0.5, material_right)),
     ];
     let mut rng = rand::thread_rng();
     let dist = Uniform::from(0.0..=1.0);
@@ -58,8 +68,12 @@ fn ray_color(ray: Ray, world: &impl Hittable, depth: usize) -> Color {
     }
 
     if let Some(hit) = world.hit(ray, 0.001..=f64::INFINITY) {
-        let target = hit.p + hit.normal + Vec3::random_unit();
-        return 0.5 * ray_color(Ray::new(hit.p, target - hit.p), world, depth - 1);
+        let mut scattered = Ray::new(point!(0.0, 0.0, 0.0), vec3!(0.0, 0.0, 0.0));
+        let mut attenuation = color!(0.0, 0.0, 0.0);
+        if hit.material.scatter(&ray, &hit, &mut attenuation, &mut scattered) {
+            return attenuation * ray_color(scattered, world, depth - 1);
+        }
+        return color!(0.0, 0.0, 0.0);
     }
     let unit_direction = unit_vector(ray.direction());
     let t = 0.5 * (unit_direction.y() + 1.0);

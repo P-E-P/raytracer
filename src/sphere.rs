@@ -1,5 +1,7 @@
+use std::sync::Arc;
 use crate::hit::Hit;
 use crate::hit::Hittable;
+use crate::material::Material;
 use crate::ray::Ray;
 use crate::vec3::{dot, Point3};
 use std::ops::RangeInclusive;
@@ -7,11 +9,16 @@ use std::ops::RangeInclusive;
 pub struct Sphere {
     center: Point3,
     radius: f64,
+    material: Arc<dyn Material>,
 }
 
 impl Sphere {
-    pub fn new(center: Point3, radius: f64) -> Self {
-        Sphere { center, radius }
+    pub fn new(center: Point3, radius: f64, material: Arc<dyn Material>) -> Self {
+        Sphere {
+            center,
+            radius,
+            material,
+        }
     }
 }
 
@@ -36,6 +43,12 @@ impl Hittable for Sphere {
         }
 
         let outward_normal = (ray.at(root) - self.center) / self.radius;
-        Some(Hit::new(ray.at(root), outward_normal, root, ray))
+        Some(Hit::new(
+            ray.at(root),
+            outward_normal,
+            root,
+            ray,
+            self.material.clone(),
+        ))
     }
 }

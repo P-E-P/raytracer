@@ -107,6 +107,11 @@ impl Vec3 {
     pub fn z(&self) -> f64 {
         self.e[2]
     }
+
+    pub fn near_zero(&self) -> bool {
+        const S: f64 = 1e-8;
+        (self.e[0].abs() < S) && (self.e[1].abs() < S) && (self.e[2].abs() < S)
+    }
 }
 
 impl Default for Vec3 {
@@ -242,6 +247,10 @@ pub fn cross(u: Vec3, v: Vec3) -> Vec3 {
         u.z() * v.x() - u.x() * v.z(),
         u.x() * v.y() - u.y() * v.x(),
     )
+}
+
+pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {
+    v - 2.0 * dot(v, n) * n
 }
 
 impl fmt::Display for Vec3 {
