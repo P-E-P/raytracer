@@ -2,6 +2,7 @@ use camera::Camera;
 use hit::{Hit, Hittable};
 use material::lambertian::Lambertian;
 use material::metal::Metal;
+use material::dielectric::Dielectric;
 use rand::distributions::{Distribution, Uniform};
 use ray::*;
 use sphere::Sphere;
@@ -27,8 +28,8 @@ fn main() {
     let max_depth = 20;
 
     let material_ground = Arc::new(Lambertian::new(color!(0.8, 0.8, 0.0)));
-    let material_center = Arc::new(Lambertian::new(color!(0.7, 0.3, 0.3)));
-    let material_left = Arc::new(Metal::new(color!(0.8, 0.8, 0.8), 0.3));
+    let material_center = Arc::new(Dielectric::new(1.5));
+    let material_left = Arc::new(Dielectric::new(1.5));
     let material_right = Arc::new(Metal::new(color!(0.8, 0.6, 0.2), 1.0));
     // World
     let world: Vec<Box<dyn Hittable>> = vec![
