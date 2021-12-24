@@ -28,7 +28,7 @@ fn main() {
     let max_depth = 20;
 
     let material_ground = Arc::new(Lambertian::new(color!(0.8, 0.8, 0.0)));
-    let material_center = Arc::new(Dielectric::new(1.5));
+    let material_center = Arc::new(Lambertian::new(color!(0.1, 0.2,0.5)));
     let material_left = Arc::new(Dielectric::new(1.5));
     let material_right = Arc::new(Metal::new(color!(0.8, 0.6, 0.2), 1.0));
     // World
@@ -39,7 +39,8 @@ fn main() {
             material_ground,
         )),
         Box::new(Sphere::new(point!(0.0, 0.0, -1.0), 0.5, material_center)),
-        Box::new(Sphere::new(point!(-1.0, 0.0, -1.0), 0.5, material_left)),
+        Box::new(Sphere::new(point!(-1.0, 0.0, -1.0), 0.5, material_left.clone())),
+        Box::new(Sphere::new(point!(-1.0, 0.0, -1.0), -0.4, material_left)),
         Box::new(Sphere::new(point!(1.0, 0.0, -1.0), 0.5, material_right)),
     ];
     let mut rng = rand::thread_rng();

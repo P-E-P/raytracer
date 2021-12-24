@@ -1,7 +1,8 @@
 use super::Material;
+use crate::utils::{min, random};
 use crate::hit::Hit;
 use crate::ray::Ray;
-use crate::vec3::{refract, unit_vector, Color};
+use crate::vec3::{refract, reflect, unit_vector, dot, Color};
 
 pub struct Dielectric {
     pub refraction_index: f64,
@@ -20,9 +21,23 @@ impl Material for Dielectric {
         *attenuation = color!(1.0, 1.0, 1.0);
         let refraction_ratio = if hit.front_face { 1.0/ self.refraction_index } else { self.refraction_index };
         let unit_direction = unit_vector(r_in.direction());
-        let refracted = refract(unit_direction, hit.normal, refraction_ratio);
+        let cos_theta = min(dot(-unit_direction, hit.normal), 1.0);
+        let sin_theta = (1.0 - cos_theta * cos_theta).abs().sqrt();
+        let cannot_refract = refraction_ratio * sin_theta > 1.0;
 
-        *scattered = Ray::new(hit.p, refracted);
+        let direction = if cannot_refract || reflectance(cos_theta, refraction_ratio) > random(0.0..=1.0) {
+            reflect(unit_direction, hit.normal)
+        } else {
+            refract(unit_direction, hit.normal, refraction_ratio)
+        };
+
+        *scattered = Ray::new(hit.p, direction);
         true
     }
+}
+
+fn reflectance(cosine: f64, ref_idx: f64) -> f64 {
+    let mut r0 = (1.0 - ref_idx) / (1.0 + ref_idx);
+    r0 = r0 * r0;
+    r0 + (1.0 - r0) * (1.0 - cosine).powf(5.0)
 }
