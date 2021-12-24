@@ -51,12 +51,17 @@ fn main() {
     let dist = Uniform::from(0.0..=1.0);
 
     // Camera
+    let look_from = point!(3.0, 3.0, 2.0);
+    let look_at = point!(0.0, 0.0, -1.0);
+
     let cam = Camera::new(
-        point!(-2.0, 2.0, 1.0),
-        point!(0.0, 0.0, -1.0),
+        look_from,
+        look_at,
         vec3!(0.0, 1.0, 0.0),
         90.0,
         16.0 / 9.0,
+        2.0,
+        (look_from - look_at).len(),
     );
 
     println!("P3\n{} {}\n255\n", image_width, image_height);

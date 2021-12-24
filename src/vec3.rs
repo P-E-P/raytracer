@@ -63,6 +63,18 @@ impl Vec3 {
         }
     }
 
+    pub fn random_in_unit_disk() -> Self {
+        let mut rng = rand::thread_rng();
+        let dist = Uniform::from(-1.0..=1.0);
+        loop {
+            let p = Vec3::new(dist.sample(&mut rng), dist.sample(&mut rng), 0.0);
+            if p.length_squared() >= 1.0 {
+                continue;
+            }
+            return p;
+        }
+    }
+
     /// A (bad) diffuse renderer
     pub fn random_in_unit_sphere() -> Self {
         loop {
