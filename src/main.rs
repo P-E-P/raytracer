@@ -22,7 +22,7 @@ mod utils;
 fn main() {
     // Image
     let aspect_ratio = 16.0 / 9.0;
-    let image_width = 1080;
+    let image_width = 480;
     let image_height = (image_width as f64 / aspect_ratio) as usize;
     let sample_per_pixel = 50;
     let max_depth = 20;
@@ -47,7 +47,7 @@ fn main() {
     let dist = Uniform::from(0.0..=1.0);
 
     // Camera
-    let cam = Camera::new();
+    let cam = Camera::new(90.0, 16.0 / 9.0);
 
     println!("P3\n{} {}\n255\n", image_width, image_height);
 
