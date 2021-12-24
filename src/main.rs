@@ -1,8 +1,8 @@
 use camera::Camera;
 use hit::{Hit, Hittable};
+use material::dielectric::Dielectric;
 use material::lambertian::Lambertian;
 use material::metal::Metal;
-use material::dielectric::Dielectric;
 use rand::distributions::{Distribution, Uniform};
 use ray::*;
 use sphere::Sphere;
@@ -28,7 +28,7 @@ fn main() {
     let max_depth = 30;
 
     let material_ground = Arc::new(Lambertian::new(color!(0.8, 0.8, 0.0)));
-    let material_center = Arc::new(Lambertian::new(color!(0.1, 0.2,0.5)));
+    let material_center = Arc::new(Lambertian::new(color!(0.1, 0.2, 0.5)));
     let material_left = Arc::new(Dielectric::new(1.5));
     let material_right = Arc::new(Metal::new(color!(0.8, 0.6, 0.2), 1.0));
     // World
@@ -39,7 +39,11 @@ fn main() {
             material_ground,
         )),
         Box::new(Sphere::new(point!(0.0, 0.0, -1.0), 0.5, material_center)),
-        Box::new(Sphere::new(point!(-1.0, 0.0, -1.0), 0.5, material_left.clone())),
+        Box::new(Sphere::new(
+            point!(-1.0, 0.0, -1.0),
+            0.5,
+            material_left.clone(),
+        )),
         Box::new(Sphere::new(point!(-1.0, 0.0, -1.0), -0.4, material_left)),
         Box::new(Sphere::new(point!(1.0, 0.0, -1.0), 0.5, material_right)),
     ];
@@ -47,7 +51,13 @@ fn main() {
     let dist = Uniform::from(0.0..=1.0);
 
     // Camera
-    let cam = Camera::new(point!(-2.0, 2.0, 1.0), point!(0.0, 0.0, -1.0), vec3!(0.0, 1.0, 0.0), 90.0, 16.0 / 9.0);
+    let cam = Camera::new(
+        point!(-2.0, 2.0, 1.0),
+        point!(0.0, 0.0, -1.0),
+        vec3!(0.0, 1.0, 0.0),
+        90.0,
+        16.0 / 9.0,
+    );
 
     println!("P3\n{} {}\n255\n", image_width, image_height);
 

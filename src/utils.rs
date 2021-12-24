@@ -1,6 +1,6 @@
-use std::ops::RangeInclusive;
 use rand::distributions::uniform::SampleUniform;
 use rand::distributions::{Distribution, Uniform};
+use std::ops::RangeInclusive;
 
 pub fn clamp<T>(input: T, min: T, max: T) -> T
 where
@@ -17,7 +17,8 @@ where
 
 pub fn min<T>(input1: T, input2: T) -> T
 where
-T: PartialOrd<T>{
+    T: PartialOrd<T>,
+{
     if input1 < input2 {
         input1
     } else {
@@ -27,9 +28,9 @@ T: PartialOrd<T>{
 
 pub fn random<T>(r: RangeInclusive<T>) -> T
 where
-T: SampleUniform
+    T: SampleUniform,
 {
-        let mut rng = rand::thread_rng();
-        let dist = Uniform::from(r);
-        dist.sample(&mut rng)
+    let mut rng = rand::thread_rng();
+    let dist = Uniform::from(r);
+    dist.sample(&mut rng)
 }
