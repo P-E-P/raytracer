@@ -4,7 +4,7 @@ use crate::vec3::*;
 pub struct Ray {
     origin: Point3,
     direction: Vec3,
-    tm: f64,
+    time: f64,
 }
 
 impl Ray {
@@ -12,16 +12,13 @@ impl Ray {
         Self {
             origin,
             direction,
-            tm: 0.0,
+            time: 0.0,
         }
     }
 
-    pub fn timed(origin: Point3, direction: Vec3, time: f64) -> Self {
-        Self {
-            origin,
-            direction,
-            tm: time,
-        }
+    pub fn timed(mut self, time: f64) -> Self {
+        self.time = time;
+        self
     }
 
     pub fn origin(&self) -> Point3 {
@@ -33,7 +30,7 @@ impl Ray {
     }
 
     pub fn time(&self) -> f64 {
-        self.tm
+        self.time
     }
 
     pub fn at(&self, t: f64) -> Point3 {
