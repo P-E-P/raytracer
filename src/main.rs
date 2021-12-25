@@ -8,6 +8,7 @@ use ray::*;
 use sphere::Sphere;
 use std::ops::RangeInclusive;
 use std::sync::Arc;
+use utils::random;
 use vec3::*;
 
 mod hit;
@@ -19,49 +20,90 @@ mod camera;
 mod material;
 mod utils;
 
+fn random_scene() -> Vec<Box<dyn Hittable>> {
+    let mut world: Vec<Box<dyn Hittable>> = vec![];
+    let material_ground = Arc::new(Lambertian::new(color!(0.5, 0.5, 0.5)));
+    world.push(Box::new(Sphere::new(
+        point!(0.0, -1000.0, 0.0),
+        1000.0,
+        material_ground,
+    )));
+
+    for a in -11..11 {
+        for b in -11..11 {
+            let choose_mat = random(0.0..=1.0);
+            let center = point!(
+                a as f64 + 0.9 * random(0.0..=1.0),
+                0.2,
+                b as f64 + 0.9 * random(0.0..=1.0)
+            );
+            if (center - point!(4.0, 0.2, 0.0)).len() > 0.9 {
+                if choose_mat < 0.8 {
+                    let albedo = Color::random() * Color::random();
+                    let sphere_material = Arc::new(Lambertian::new(albedo));
+                    world.push(Box::new(Sphere::new(center, 0.2, sphere_material.clone())));
+                } else if choose_mat < 0.95 {
+                    let albedo = Color::delimited(0.5..=1.0);
+                    let fuzz = random(0.0..=0.5);
+                    let sphere_material = Arc::new(Metal::new(albedo, fuzz));
+                    world.push(Box::new(Sphere::new(center, 0.2, sphere_material.clone())));
+                } else {
+                    let sphere_material = Arc::new(Dielectric::new(1.5));
+                    world.push(Box::new(Sphere::new(center, 0.2, sphere_material.clone())));
+                }
+            }
+        }
+    }
+
+    let material = Arc::new(Dielectric::new(1.5));
+    world.push(Box::new(Sphere::new(
+        point!(0.0, 1.0, 0.0),
+        1.0,
+        material.clone(),
+    )));
+
+    let material = Arc::new(Lambertian::new(color!(0.4, 0.2, 0.1)));
+    world.push(Box::new(Sphere::new(
+        point!(-4.0, 1.0, 0.0),
+        1.0,
+        material.clone(),
+    )));
+
+    let material = Arc::new(Metal::new(color!(0.7, 0.6, 0.5), 0.0));
+    world.push(Box::new(Sphere::new(
+        point!(4.0, 1.0, 0.0),
+        1.0,
+        material.clone(),
+    )));
+
+    world
+}
+
 fn main() {
     // Image
     let aspect_ratio = 16.0 / 9.0;
     let image_width = 1080;
     let image_height = (image_width as f64 / aspect_ratio) as usize;
-    let sample_per_pixel = 50;
-    let max_depth = 30;
+    let sample_per_pixel = 100;
+    let max_depth = 50;
 
-    let material_ground = Arc::new(Lambertian::new(color!(0.8, 0.8, 0.0)));
-    let material_center = Arc::new(Lambertian::new(color!(0.1, 0.2, 0.5)));
-    let material_left = Arc::new(Dielectric::new(1.5));
-    let material_right = Arc::new(Metal::new(color!(0.8, 0.6, 0.2), 1.0));
     // World
-    let world: Vec<Box<dyn Hittable>> = vec![
-        Box::new(Sphere::new(
-            point!(0.0, -100.5, -1.0),
-            100.0,
-            material_ground,
-        )),
-        Box::new(Sphere::new(point!(0.0, 0.0, -1.0), 0.5, material_center)),
-        Box::new(Sphere::new(
-            point!(-1.0, 0.0, -1.0),
-            0.5,
-            material_left.clone(),
-        )),
-        Box::new(Sphere::new(point!(-1.0, 0.0, -1.0), -0.4, material_left)),
-        Box::new(Sphere::new(point!(1.0, 0.0, -1.0), 0.5, material_right)),
-    ];
+    let world: Vec<Box<dyn Hittable>> = random_scene();
     let mut rng = rand::thread_rng();
     let dist = Uniform::from(0.0..=1.0);
 
     // Camera
-    let look_from = point!(3.0, 3.0, 2.0);
-    let look_at = point!(0.0, 0.0, -1.0);
+    let look_from = point!(13.0, 2.0, 3.0);
+    let look_at = point!(0.0, 0.0, 0.0);
 
     let cam = Camera::new(
         look_from,
         look_at,
         vec3!(0.0, 1.0, 0.0),
-        90.0,
+        20.0,
         16.0 / 9.0,
-        2.0,
-        (look_from - look_at).len(),
+        0.1,
+        10.0,
     );
 
     println!("P3\n{} {}\n255\n", image_width, image_height);
