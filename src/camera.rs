@@ -72,7 +72,8 @@ impl Camera {
         let v = cross(w, u);
         let horizontal = self.focus_dist * viewport_width * u;
         let vertical = self.focus_dist * viewport_height * v;
-        let lower_left_corner = self.origin - horizontal / 2.0 - vertical / 2.0 - self.focus_dist * w;
+        let lower_left_corner =
+            self.origin - horizontal / 2.0 - vertical / 2.0 - self.focus_dist * w;
 
         Freeze {
             origin: self.origin,
