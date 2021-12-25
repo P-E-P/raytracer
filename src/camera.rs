@@ -3,14 +3,14 @@ use crate::utils::random;
 use crate::vec3::{cross, unit_vector, Point3, Vec3};
 
 pub struct Freeze {
-    pub origin: Point3,
-    pub lower_left_corner: Point3,
-    pub u: Vec3,
-    pub v: Vec3,
-    pub w: Vec3,
-    pub horizontal: Vec3,
-    pub vertical: Vec3,
-    pub lens_radius: f64,
+    origin: Point3,
+    lower_left_corner: Point3,
+    u: Vec3,
+    v: Vec3,
+    w: Vec3,
+    horizontal: Vec3,
+    vertical: Vec3,
+    lens_radius: f64,
     time0: f64,
     time1: f64,
 }
