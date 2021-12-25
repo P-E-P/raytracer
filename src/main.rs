@@ -82,10 +82,10 @@ fn random_scene() -> Vec<Box<dyn Hittable>> {
 fn main() {
     // Image
     let aspect_ratio = 16.0 / 9.0;
-    let image_width = 1080;
+    let image_width = 360;
     let image_height = (image_width as f64 / aspect_ratio) as usize;
-    let sample_per_pixel = 100;
-    let max_depth = 50;
+    let sample_per_pixel = 50;
+    let max_depth = 25;
 
     // World
     let world: Vec<Box<dyn Hittable>> = random_scene();
@@ -96,15 +96,7 @@ fn main() {
     let look_from = point!(13.0, 2.0, 3.0);
     let look_at = point!(0.0, 0.0, 0.0);
 
-    let cam = Camera::new(
-        look_from,
-        look_at,
-        vec3!(0.0, 1.0, 0.0),
-        20.0,
-        16.0 / 9.0,
-        0.1,
-        10.0,
-    );
+    let cam = Camera::new(look_from, look_at, 20.0, 16.0 / 9.0, 0.1, 10.0).freeze();
 
     println!("P3\n{} {}\n255\n", image_width, image_height);
 
