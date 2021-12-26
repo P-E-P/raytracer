@@ -6,6 +6,7 @@ use material::metal::Metal;
 use rand::distributions::{Distribution, Uniform};
 use ray::*;
 use sphere::Sphere;
+use moving_sphere::MovingSphere;
 use std::ops::RangeInclusive;
 use std::sync::Arc;
 use utils::random;
@@ -14,6 +15,7 @@ use vec3::*;
 mod hit;
 mod ray;
 mod sphere;
+mod moving_sphere;
 #[macro_use]
 mod vec3;
 mod camera;
@@ -41,7 +43,8 @@ fn random_scene() -> Vec<Box<dyn Hittable>> {
                 if choose_mat < 0.8 {
                     let albedo = Color::random() * Color::random();
                     let sphere_material = Arc::new(Lambertian::new(albedo));
-                    world.push(Box::new(Sphere::new(center, 0.2, sphere_material.clone())));
+                    let center2 = center + vec3!(0.0, random(0.0..=0.5), 0.0);
+                    world.push(Box::new(MovingSphere::new(center, center2, 0.0, 0.1, 0.2, sphere_material.clone())));
                 } else if choose_mat < 0.95 {
                     let albedo = Color::delimited(0.5..=1.0);
                     let fuzz = random(0.0..=0.5);
@@ -82,9 +85,9 @@ fn random_scene() -> Vec<Box<dyn Hittable>> {
 fn main() {
     // Image
     let aspect_ratio = 16.0 / 9.0;
-    let image_width = 360;
+    let image_width = 720;
     let image_height = (image_width as f64 / aspect_ratio) as usize;
-    let sample_per_pixel = 50;
+    let sample_per_pixel = 100;
     let max_depth = 25;
 
     // World
@@ -96,7 +99,7 @@ fn main() {
     let look_from = point!(13.0, 2.0, 3.0);
     let look_at = point!(0.0, 0.0, 0.0);
 
-    let cam = Camera::new(look_from, look_at, 20.0, 16.0 / 9.0, 0.1, 10.0).freeze();
+    let cam = Camera::new(look_from, look_at, 20.0, 16.0 / 9.0, 0.1, 10.0).timed(0.0, 1.0).freeze();
 
     println!("P3\n{} {}\n255\n", image_width, image_height);
 
