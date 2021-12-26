@@ -1,8 +1,9 @@
+use crate::aabb::Aabb;
 use crate::hit::Hit;
 use crate::hit::Hittable;
 use crate::material::Material;
 use crate::ray::Ray;
-use crate::vec3::{dot, Point3};
+use crate::vec3::{dot, Point3, Vec3};
 use std::ops::RangeInclusive;
 use std::sync::Arc;
 
@@ -16,7 +17,14 @@ pub struct MovingSphere {
 }
 
 impl MovingSphere {
-    pub fn new(center0: Point3, center1: Point3, time0: f64, time1: f64, radius: f64, material: Arc<dyn Material>) -> Self {
+    pub fn new(
+        center0: Point3,
+        center1: Point3,
+        time0: f64,
+        time1: f64,
+        radius: f64,
+        material: Arc<dyn Material>,
+    ) -> Self {
         MovingSphere {
             center0,
             center1,
@@ -28,9 +36,9 @@ impl MovingSphere {
     }
 
     fn center(&self, time: f64) -> Point3 {
-        self.center0 + ((time - self.time0) / (self.time1 - self.time0)) * (self.center1 - self.center0)
+        self.center0
+            + ((time - self.time0) / (self.time1 - self.time0)) * (self.center1 - self.center0)
     }
-
 }
 
 impl Hittable for MovingSphere {
@@ -61,5 +69,19 @@ impl Hittable for MovingSphere {
             ray,
             self.material.clone(),
         ))
+    }
+
+    fn bounding_box(&self, time0: f64, time1: f64) -> Option<Aabb> {
+        let box0 = Aabb::new(
+            self.center(time0) - Vec3::new(self.radius, self.radius, self.radius),
+            self.center(time0) + Vec3::new(self.radius, self.radius, self.radius),
+        );
+
+        let box1 = Aabb::new(
+            self.center(time1) - Vec3::new(self.radius, self.radius, self.radius),
+            self.center(time1) + Vec3::new(self.radius, self.radius, self.radius),
+        );
+
+        Some(Aabb::surrounding(&box0, &box1))
     }
 }

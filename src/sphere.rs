@@ -1,8 +1,9 @@
+use crate::aabb::Aabb;
 use crate::hit::Hit;
 use crate::hit::Hittable;
 use crate::material::Material;
 use crate::ray::Ray;
-use crate::vec3::{dot, Point3};
+use crate::vec3::{dot, Point3, Vec3};
 use std::ops::RangeInclusive;
 use std::sync::Arc;
 
@@ -49,6 +50,13 @@ impl Hittable for Sphere {
             root,
             ray,
             self.material.clone(),
+        ))
+    }
+
+    fn bounding_box(&self, _: f64, _: f64) -> Option<Aabb> {
+        Some(Aabb::new(
+            self.center - Vec3::new(self.radius, self.radius, self.radius),
+            self.center + Vec3::new(self.radius, self.radius, self.radius),
         ))
     }
 }
