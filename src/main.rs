@@ -8,7 +8,6 @@ use moving_sphere::MovingSphere;
 use rand::distributions::{Distribution, Uniform};
 use ray::*;
 use sphere::Sphere;
-use std::ops::RangeInclusive;
 use std::sync::Arc;
 use utils::random;
 use vec3::*;
@@ -20,6 +19,7 @@ mod sphere;
 #[macro_use]
 mod vec3;
 mod aabb;
+mod bvh;
 mod camera;
 mod material;
 mod utils;
@@ -136,7 +136,7 @@ fn ray_color(ray: Ray, world: &impl Hittable, depth: usize) -> Color {
         return color!(0.0, 0.0, 0.0);
     }
 
-    if let Some(hit) = world.hit(ray, 0.001..=f64::INFINITY) {
+    if let Some(hit) = world.hit(ray, 0.001, f64::INFINITY) {
         let mut scattered = Ray::new(point!(0.0, 0.0, 0.0), vec3!(0.0, 0.0, 0.0));
         let mut attenuation = color!(0.0, 0.0, 0.0);
         if hit
@@ -167,12 +167,12 @@ fn colorize(color: Color, spp: usize) -> String {
 }
 
 impl Hittable for Vec<Box<dyn Hittable>> {
-    fn hit(&self, ray: Ray, range: RangeInclusive<f64>) -> Option<Hit> {
-        let mut closest_so_far = *range.end();
+    fn hit(&self, ray: Ray, t_min: f64, t_max: f64) -> Option<Hit> {
+        let mut closest_so_far = t_max;
         let mut result = None;
 
         for object in self.iter() {
-            if let Some(hit) = object.hit(ray, *range.start()..=closest_so_far) {
+            if let Some(hit) = object.hit(ray, t_min, closest_so_far) {
                 closest_so_far = hit.t;
                 result = Some(hit);
             }

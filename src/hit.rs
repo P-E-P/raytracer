@@ -2,7 +2,6 @@ use crate::aabb::Aabb;
 use crate::material::Material;
 use crate::ray::Ray;
 use crate::vec3::*;
-use std::ops::RangeInclusive;
 use std::sync::Arc;
 
 pub struct Hit {
@@ -37,6 +36,6 @@ impl Hit {
 }
 
 pub trait Hittable {
-    fn hit(&self, ray: Ray, range: RangeInclusive<f64>) -> Option<Hit>;
+    fn hit(&self, ray: Ray, t_min: f64, t_max: f64) -> Option<Hit>;
     fn bounding_box(&self, time0: f64, time1: f64) -> Option<Aabb>;
 }

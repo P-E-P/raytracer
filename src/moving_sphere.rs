@@ -4,7 +4,6 @@ use crate::hit::Hittable;
 use crate::material::Material;
 use crate::ray::Ray;
 use crate::vec3::{dot, Point3, Vec3};
-use std::ops::RangeInclusive;
 use std::sync::Arc;
 
 pub struct MovingSphere {
@@ -42,7 +41,7 @@ impl MovingSphere {
 }
 
 impl Hittable for MovingSphere {
-    fn hit(&self, ray: Ray, range: RangeInclusive<f64>) -> Option<Hit> {
+    fn hit(&self, ray: Ray, t_min: f64, t_max: f64) -> Option<Hit> {
         let oc = ray.origin() - self.center(ray.time());
         let a = ray.direction().length_squared();
         let half_b = dot(oc, ray.direction());
@@ -54,9 +53,9 @@ impl Hittable for MovingSphere {
         let sqrtd = discriminant.sqrt();
 
         let mut root = (-half_b - sqrtd) / a;
-        if !range.contains(&root) {
+        if !(t_min..=t_max).contains(&root) {
             root = (-half_b + sqrtd) / a;
-            if !range.contains(&root) {
+            if !(t_min..=t_max).contains(&root) {
                 return None;
             }
         }
