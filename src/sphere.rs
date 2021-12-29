@@ -1,9 +1,9 @@
+use crate::aabb::Aabb;
 use crate::hit::Hit;
 use crate::hit::Hittable;
 use crate::material::Material;
 use crate::ray::Ray;
-use crate::vec3::{dot, Point3};
-use std::ops::RangeInclusive;
+use crate::vec3::{dot, Point3, Vec3};
 use std::sync::Arc;
 
 pub struct Sphere {
@@ -23,7 +23,7 @@ impl Sphere {
 }
 
 impl Hittable for Sphere {
-    fn hit(&self, ray: Ray, range: RangeInclusive<f64>) -> Option<Hit> {
+    fn hit(&self, ray: Ray, t_min: f64, t_max: f64) -> Option<Hit> {
         let oc = ray.origin() - self.center;
         let a = ray.direction().length_squared();
         let half_b = dot(oc, ray.direction());
@@ -35,9 +35,9 @@ impl Hittable for Sphere {
         let sqrtd = discriminant.sqrt();
 
         let mut root = (-half_b - sqrtd) / a;
-        if !range.contains(&root) {
+        if !(t_min..=t_max).contains(&root) {
             root = (-half_b + sqrtd) / a;
-            if !range.contains(&root) {
+            if !(t_min..=t_max).contains(&root) {
                 return None;
             }
         }
@@ -49,6 +49,13 @@ impl Hittable for Sphere {
             root,
             ray,
             self.material.clone(),
+        ))
+    }
+
+    fn bounding_box(&self, _: f64, _: f64) -> Option<Aabb> {
+        Some(Aabb::new(
+            self.center - Vec3::new(self.radius, self.radius, self.radius),
+            self.center + Vec3::new(self.radius, self.radius, self.radius),
         ))
     }
 }

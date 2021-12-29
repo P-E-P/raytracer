@@ -1,23 +1,25 @@
+use aabb::Aabb;
 use camera::Camera;
 use hit::{Hit, Hittable};
 use material::dielectric::Dielectric;
 use material::lambertian::Lambertian;
 use material::metal::Metal;
+use moving_sphere::MovingSphere;
 use rand::distributions::{Distribution, Uniform};
 use ray::*;
 use sphere::Sphere;
-use moving_sphere::MovingSphere;
-use std::ops::RangeInclusive;
 use std::sync::Arc;
 use utils::random;
 use vec3::*;
 
 mod hit;
+mod moving_sphere;
 mod ray;
 mod sphere;
-mod moving_sphere;
 #[macro_use]
 mod vec3;
+mod aabb;
+mod bvh;
 mod camera;
 mod material;
 mod utils;
@@ -44,7 +46,14 @@ fn random_scene() -> Vec<Box<dyn Hittable>> {
                     let albedo = Color::random() * Color::random();
                     let sphere_material = Arc::new(Lambertian::new(albedo));
                     let center2 = center + vec3!(0.0, random(0.0..=0.5), 0.0);
-                    world.push(Box::new(MovingSphere::new(center, center2, 0.0, 0.1, 0.2, sphere_material.clone())));
+                    world.push(Box::new(MovingSphere::new(
+                        center,
+                        center2,
+                        0.0,
+                        0.1,
+                        0.2,
+                        sphere_material.clone(),
+                    )));
                 } else if choose_mat < 0.95 {
                     let albedo = Color::delimited(0.5..=1.0);
                     let fuzz = random(0.0..=0.5);
@@ -99,7 +108,9 @@ fn main() {
     let look_from = point!(13.0, 2.0, 3.0);
     let look_at = point!(0.0, 0.0, 0.0);
 
-    let cam = Camera::new(look_from, look_at, 20.0, 16.0 / 9.0, 0.1, 10.0).timed(0.0, 1.0).freeze();
+    let cam = Camera::new(look_from, look_at, 20.0, 16.0 / 9.0, 0.1, 10.0)
+        .timed(0.0, 1.0)
+        .freeze();
 
     println!("P3\n{} {}\n255\n", image_width, image_height);
 
@@ -125,7 +136,7 @@ fn ray_color(ray: Ray, world: &impl Hittable, depth: usize) -> Color {
         return color!(0.0, 0.0, 0.0);
     }
 
-    if let Some(hit) = world.hit(ray, 0.001..=f64::INFINITY) {
+    if let Some(hit) = world.hit(ray, 0.001, f64::INFINITY) {
         let mut scattered = Ray::new(point!(0.0, 0.0, 0.0), vec3!(0.0, 0.0, 0.0));
         let mut attenuation = color!(0.0, 0.0, 0.0);
         if hit
@@ -156,14 +167,38 @@ fn colorize(color: Color, spp: usize) -> String {
 }
 
 impl Hittable for Vec<Box<dyn Hittable>> {
-    fn hit(&self, ray: Ray, range: RangeInclusive<f64>) -> Option<Hit> {
-        let mut closest_so_far = *range.end();
+    fn hit(&self, ray: Ray, t_min: f64, t_max: f64) -> Option<Hit> {
+        let mut closest_so_far = t_max;
         let mut result = None;
 
         for object in self.iter() {
-            if let Some(hit) = object.hit(ray, *range.start()..=closest_so_far) {
+            if let Some(hit) = object.hit(ray, t_min, closest_so_far) {
                 closest_so_far = hit.t;
                 result = Some(hit);
+            }
+        }
+
+        result
+    }
+
+    fn bounding_box(&self, time0: f64, time1: f64) -> Option<Aabb> {
+        if self.is_empty() {
+            return None;
+        }
+
+        let mut result: Option<Aabb> = None;
+
+        for object in self {
+            match object.bounding_box(time0, time1) {
+                Some(current) => match result {
+                    Some(previous) => {
+                        result = Some(Aabb::surrounding(&previous, &current));
+                    }
+                    None => {
+                        result = Some(current);
+                    }
+                },
+                None => return None,
             }
         }
 
