@@ -116,7 +116,7 @@ fn main() {
     for j in (0..image_height).rev() {
         eprintln!("Scanline remaining: {}", j);
         for i in 0..image_width {
-            let mut pixel_color = color!(0.0, 0.0, 0.0);
+            let mut pixel_color = Color::default();
 
             for _ in 0..sample_per_pixel {
                 let u = (i as f64 + dist.sample(&mut rng)) / (image_width - 1) as f64;
@@ -132,19 +132,19 @@ fn main() {
 
 fn ray_color(ray: Ray, world: &impl Hittable, depth: usize) -> Color {
     if depth == 0 {
-        return color!(0.0, 0.0, 0.0);
+        return Color::default();
     }
 
     if let Some(hit) = world.hit(ray, 0.001, f64::INFINITY) {
-        let mut scattered = Ray::new(point!(0.0, 0.0, 0.0), vec3!(0.0, 0.0, 0.0));
-        let mut attenuation = color!(0.0, 0.0, 0.0);
+        let mut scattered = Ray::default();
+        let mut attenuation = Color::default();
         if hit
             .material
             .scatter(&ray, &hit, &mut attenuation, &mut scattered)
         {
             return attenuation * ray_color(scattered, world, depth - 1);
         }
-        return color!(0.0, 0.0, 0.0);
+        return Color::default();
     }
     let unit_direction = unit_vector(ray.direction());
     let t = 0.5 * (unit_direction.y() + 1.0);

@@ -29,7 +29,7 @@ macro_rules! vec3 {
     };
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default)]
 pub struct Vec3 {
     pub e: [f64; 3],
 }
@@ -124,12 +124,6 @@ impl Vec3 {
     pub fn near_zero(&self) -> bool {
         const S: f64 = 1e-8;
         (self.e[0].abs() < S) && (self.e[1].abs() < S) && (self.e[2].abs() < S)
-    }
-}
-
-impl Default for Vec3 {
-    fn default() -> Self {
-        Vec3::new(0.0, 0.0, 0.0)
     }
 }
 
