@@ -1,5 +1,4 @@
 use aabb::Aabb;
-use camera::Camera;
 use hit::{Hit, Hittable};
 use material::dielectric::Dielectric;
 use material::lambertian::Lambertian;
@@ -94,7 +93,7 @@ fn random_scene() -> Vec<Box<dyn Hittable>> {
 fn main() {
     // Image
     let aspect_ratio = 16.0 / 9.0;
-    let image_width = 720;
+    let image_width = 200;
     let image_height = (image_width as f64 / aspect_ratio) as usize;
     let sample_per_pixel = 100;
     let max_depth = 25;
@@ -108,9 +107,9 @@ fn main() {
     let look_from = point!(13.0, 2.0, 3.0);
     let look_at = point!(0.0, 0.0, 0.0);
 
-    let cam = Camera::new(look_from, look_at, 20.0, 16.0 / 9.0, 0.1, 10.0)
+    let cam = camera::Builder::new(look_from, look_at, 20.0, aspect_ratio, 0.1, 10.0)
         .timed(0.0, 1.0)
-        .freeze();
+        .build();
 
     println!("P3\n{} {}\n255\n", image_width, image_height);
 
