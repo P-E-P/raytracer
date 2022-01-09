@@ -98,6 +98,9 @@ fn main() {
     let sample_per_pixel = 100;
     let max_depth = 25;
 
+    let mut image: Vec<Color> = Vec::new();
+    image.resize_with(image_width * image_height, Default::default);
+
     // World
     let world: Vec<Box<dyn Hittable>> = random_scene();
     let mut rng = rand::thread_rng();
@@ -136,12 +139,7 @@ fn ray_color(ray: Ray, world: &impl Hittable, depth: usize) -> Color {
     }
 
     if let Some(hit) = world.hit(ray, 0.001, f64::INFINITY) {
-        let mut scattered = Ray::default();
-        let mut attenuation = Color::default();
-        if hit
-            .material
-            .scatter(&ray, &hit, &mut attenuation, &mut scattered)
-        {
+        if let Some((scattered, attenuation)) = hit.material.scatter(&ray, &hit) {
             return attenuation * ray_color(scattered, world, depth - 1);
         }
         return Color::default();

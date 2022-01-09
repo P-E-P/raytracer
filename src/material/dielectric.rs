@@ -15,8 +15,8 @@ impl Dielectric {
 }
 
 impl Material for Dielectric {
-    fn scatter(&self, r_in: &Ray, hit: &Hit, attenuation: &mut Color, scattered: &mut Ray) -> bool {
-        *attenuation = color!(1.0, 1.0, 1.0);
+    fn scatter(&self, r_in: &Ray, hit: &Hit) -> Option<(Ray, Color)> {
+        let attenuation = color!(1.0, 1.0, 1.0);
         let refraction_ratio = if hit.front_face {
             1.0 / self.refraction_index
         } else {
@@ -34,8 +34,8 @@ impl Material for Dielectric {
                 refract(unit_direction, hit.normal, refraction_ratio)
             };
 
-        *scattered = Ray::new(hit.p, direction).timed(r_in.time());
-        true
+        let scattered = Ray::new(hit.p, direction).timed(r_in.time());
+        Some((scattered, attenuation))
     }
 }
 

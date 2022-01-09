@@ -18,14 +18,17 @@ impl Metal {
 }
 
 impl Material for Metal {
-    fn scatter(&self, r_in: &Ray, hit: &Hit, attenuation: &mut Color, scattered: &mut Ray) -> bool {
+    fn scatter(&self, r_in: &Ray, hit: &Hit) -> Option<(Ray, Color)> {
         let reflected = reflect(unit_vector(r_in.direction()), hit.normal);
-        *scattered = Ray::new(
+        let scattered = Ray::new(
             hit.p,
             reflected + self.fuzziness * Vec3::random_in_unit_sphere(),
         )
         .timed(r_in.time());
-        *attenuation = self.albedo;
-        dot(scattered.direction(), hit.normal) > 0.0
+        if dot(scattered.direction(), hit.normal) > 0.0 {
+            Some((scattered, self.albedo))
+        } else {
+            None
+        }
     }
 }
