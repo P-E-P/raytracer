@@ -1,11 +1,12 @@
+use crate::vec3::*;
 use aabb::Aabb;
-use hit::{Hit, Hittable};
 use camera::Camera;
-use scene::random_scene;
-use rand::distributions::{Distribution, Uniform};
-use render::{RenderSettings, render};
-use ray::*;
-use vec3::*;
+use hit::{Hit, Hittable};
+use ray::Ray;
+use render::{render, RenderSettings};
+use scene::*;
+use std::fs::File;
+use std::io::BufWriter;
 
 mod hit;
 mod moving_sphere;
@@ -17,18 +18,15 @@ mod aabb;
 mod bvh;
 mod camera;
 mod material;
-mod utils;
 mod render;
 mod scene;
-
+mod utils;
 
 fn main() {
-    let settings = RenderSettings::new(200, 16.0 / 9.0);
+    let settings = RenderSettings::new(400, 16.0 / 9.0);
 
     // World
-    let world: Vec<Box<dyn Hittable>> = random_scene();
-    let mut rng = rand::thread_rng();
-    let dist = Uniform::from(0.0..=1.0);
+    let world: Vec<Box<dyn Hittable>> = final_first();
 
     // Camera
     let look_from = point!(13.0, 2.0, 3.0);
@@ -38,41 +36,21 @@ fn main() {
         .timed(0.0, 1.0)
         .build();
 
-    let pixels = render(&world, &cam, settings);
+    let pixels = render(&world, &cam, &settings);
 
-    println!("P3\n{} {}\n255\n", settings.image_width, settings.image_height);
+    let file = File::create("test.png").unwrap();
+    let writer = BufWriter::new(file);
+    let mut encoder = png::Encoder::new(
+        writer,
+        settings.image_width as u32,
+        settings.image_height as u32,
+    );
+    encoder.set_color(png::ColorType::Rgb);
+    encoder.set_depth(png::BitDepth::Eight);
 
-    for j in (0..settings.image_height).rev() {
-        eprintln!("Scanline remaining: {}", j);
-        for i in 0..settings.image_width {
-            let mut pixel_color = Color::default();
+    let mut writer = encoder.write_header().unwrap();
 
-            for _ in 0..settings.sample_per_pixel {
-                let u = (i as f64 + dist.sample(&mut rng)) / (settings.image_width - 1) as f64;
-                let v = (j as f64 + dist.sample(&mut rng)) / (settings.image_height - 1) as f64;
-                let ray = cam.get_ray(u, v);
-                pixel_color += ray_color(ray, &world, settings.max_depth);
-            }
-
-            println!("{}", colorize(pixel_color, settings.sample_per_pixel));
-        }
-    }
-}
-
-fn ray_color(ray: Ray, world: &impl Hittable, depth: usize) -> Color {
-    if depth == 0 {
-        return Color::default();
-    }
-
-    if let Some(hit) = world.hit(ray, 0.001, f64::INFINITY) {
-        if let Some((scattered, attenuation)) = hit.material.scatter(&ray, &hit) {
-            return attenuation * ray_color(scattered, world, depth - 1);
-        }
-        return Color::default();
-    }
-    let unit_direction = unit_vector(ray.direction());
-    let t = 0.5 * (unit_direction.y() + 1.0);
-    (1.0 - t) * color!(1.0, 1.0, 1.0) + t * color!(0.5, 0.7, 1.0)
+    writer.write_image_data(&pixels).unwrap();
 }
 
 fn colorize(color: Color, spp: usize) -> String {
