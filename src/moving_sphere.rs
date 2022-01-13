@@ -6,23 +6,23 @@ use crate::ray::Ray;
 use crate::vec3::{dot, Point3, Vec3};
 use std::sync::Arc;
 
-pub struct MovingSphere {
+pub struct MovingSphere<M: Material> {
     center0: Point3,
     center1: Point3,
     time0: f64,
     time1: f64,
     radius: f64,
-    material: Arc<dyn Material>,
+    material: M,
 }
 
-impl MovingSphere {
+impl<M: Material> MovingSphere<M> {
     pub fn new(
         center0: Point3,
         center1: Point3,
         time0: f64,
         time1: f64,
         radius: f64,
-        material: Arc<dyn Material>,
+        material: M,
     ) -> Self {
         MovingSphere {
             center0,
@@ -40,7 +40,7 @@ impl MovingSphere {
     }
 }
 
-impl Hittable for MovingSphere {
+impl<M: Material> Hittable for MovingSphere<M> {
     fn hit(&self, ray: Ray, t_min: f64, t_max: f64) -> Option<Hit> {
         let oc = ray.origin() - self.center(ray.time());
         let a = ray.direction().length_squared();
@@ -66,7 +66,7 @@ impl Hittable for MovingSphere {
             outward_normal,
             root,
             ray,
-            self.material.clone(),
+            &self.material,
         ))
     }
 
