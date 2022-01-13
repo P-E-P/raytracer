@@ -52,25 +52,13 @@ pub fn random_scene() -> Vec<Box<dyn Hittable>> {
     }
 
     let material = Dielectric::new(1.5);
-    world.push(Box::new(Sphere::new(
-        point!(0.0, 1.0, 0.0),
-        1.0,
-        material,
-    )));
+    world.push(Box::new(Sphere::new(point!(0.0, 1.0, 0.0), 1.0, material)));
 
     let material = Lambertian::new(color!(0.4, 0.2, 0.1));
-    world.push(Box::new(Sphere::new(
-        point!(-4.0, 1.0, 0.0),
-        1.0,
-        material,
-    )));
+    world.push(Box::new(Sphere::new(point!(-4.0, 1.0, 0.0), 1.0, material)));
 
     let material = Metal::new(color!(0.7, 0.6, 0.5), 0.0);
-    world.push(Box::new(Sphere::new(
-        point!(4.0, 1.0, 0.0),
-        1.0,
-        material,
-    )));
+    world.push(Box::new(Sphere::new(point!(4.0, 1.0, 0.0), 1.0, material)));
 
     world
 }
@@ -96,11 +84,7 @@ pub fn final_first() -> Vec<Box<dyn Hittable>> {
                 if choose_mat < 0.8 {
                     let albedo = Color::random() * Color::random();
                     let sphere_material = Lambertian::new(albedo);
-                    world.push(Box::new(Sphere::new(
-                        center,
-                        0.2,
-                        sphere_material,
-                    )));
+                    world.push(Box::new(Sphere::new(center, 0.2, sphere_material)));
                 } else if choose_mat < 0.95 {
                     let albedo = Color::delimited(0.5..=1.0);
                     let fuzz = random(0.0..=0.5);
@@ -115,25 +99,13 @@ pub fn final_first() -> Vec<Box<dyn Hittable>> {
     }
 
     let material = Dielectric::new(1.5);
-    world.push(Box::new(Sphere::new(
-        point!(0.0, 1.0, 0.0),
-        1.0,
-        material,
-    )));
+    world.push(Box::new(Sphere::new(point!(0.0, 1.0, 0.0), 1.0, material)));
 
     let material = Lambertian::new(color!(0.4, 0.2, 0.1));
-    world.push(Box::new(Sphere::new(
-        point!(-4.0, 1.0, 0.0),
-        1.0,
-        material,
-    )));
+    world.push(Box::new(Sphere::new(point!(-4.0, 1.0, 0.0), 1.0, material)));
 
     let material = Metal::new(color!(0.7, 0.6, 0.5), 0.0);
-    world.push(Box::new(Sphere::new(
-        point!(4.0, 1.0, 0.0),
-        1.0,
-        material,
-    )));
+    world.push(Box::new(Sphere::new(point!(4.0, 1.0, 0.0), 1.0, material)));
 
     world
 }

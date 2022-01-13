@@ -3,7 +3,7 @@ use crate::vec3::unit_vector;
 use crate::Camera;
 use crate::Color;
 use crate::Hittable;
-use indicatif::{ProgressBar,ProgressStyle, HumanDuration};
+use indicatif::{HumanDuration, ProgressBar, ProgressStyle};
 use rand::distributions::{Distribution, Uniform};
 use rayon::prelude::*;
 
@@ -48,8 +48,10 @@ pub fn render(world: &Vec<Box<dyn Hittable>>, cam: &Camera, settings: &RenderSet
         (settings.image_width * settings.image_height) as u64,
     ));
     bar.set_prefix("Render in progress");
-    bar.set_style(ProgressStyle::default_bar()
-        .template("{prefix:.white} {bar:40.cyan/blue} {percent}% [{eta_precise}]"));
+    bar.set_style(
+        ProgressStyle::default_bar()
+            .template("{prefix:.white} {bar:40.cyan/blue} {percent}% [{eta_precise}]"),
+    );
 
     let result = (0..settings.image_height)
         .into_par_iter()
