@@ -31,7 +31,7 @@ fn main() {
     let look_from = point!(13.0, 2.0, 3.0);
     let look_at = point!(0.0, 0.0, 0.0);
 
-    let cam = camera::Builder::new(look_from, look_at, 20.0, settings.aspect_ratio, 0.1, 10.0)
+    let cam = camera::Builder::new(look_from, look_at, 20.0, 0.1, 10.0)
         .timed(0.0, 1.0)
         .build();
 

@@ -33,7 +33,6 @@ impl Builder {
         look_from: Point3,
         look_at: Point3,
         vfov: f64,
-        aspect_ratio: f64,
         aperture: f64,
         focus_dist: f64,
     ) -> Self {
@@ -44,7 +43,7 @@ impl Builder {
             lens_radius: aperture / 2.0,
             time0: 0.0,
             time1: 0.0,
-            aspect_ratio,
+            aspect_ratio: 16.0 / 9.0,
             focus_dist,
             vfov,
         }
@@ -53,6 +52,11 @@ impl Builder {
     /// Tilt a camera by changing the direction of it's upward component.
     pub fn tilted(&mut self, vup: Vec3) -> &mut Builder {
         self.vup = vup;
+        self
+    }
+
+    pub fn aspect_ratio(&mut self, ratio: f64) -> &mut Builder {
+        self.aspect_ratio = ratio;
         self
     }
 
