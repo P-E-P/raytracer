@@ -8,10 +8,9 @@ use scene::*;
 use std::fs::File;
 use std::io::BufWriter;
 
+mod geometry;
 mod hit;
-mod moving_sphere;
 mod ray;
-mod sphere;
 #[macro_use]
 mod vec3;
 mod aabb;

@@ -1,9 +1,8 @@
+use crate::geometry::{moving_sphere::MovingSphere, sphere::Sphere};
 use crate::hit::{Hit, Hittable};
 use crate::material::dielectric::Dielectric;
 use crate::material::lambertian::Lambertian;
 use crate::material::metal::Metal;
-use crate::moving_sphere::MovingSphere;
-use crate::sphere::Sphere;
 use crate::utils::random;
 use crate::Color;
 use std::sync::Arc;
