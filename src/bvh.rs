@@ -69,11 +69,7 @@ impl Bvh {
     }
 }
 
-fn box_compare(
-    a: &Arc<dyn Hittable>,
-    b: &Arc<dyn Hittable>,
-    axis: usize,
-) -> Ordering {
+fn box_compare(a: &Arc<dyn Hittable>, b: &Arc<dyn Hittable>, axis: usize) -> Ordering {
     let (box_a, box_b) = match (a.bounding_box(0.0, 0.0), b.bounding_box(0.0, 0.0)) {
         (Some(box_a), Some(box_b)) => (box_a, box_b),
         _ => panic!("No bounding box in bvh_node constructor"),
