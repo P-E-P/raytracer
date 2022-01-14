@@ -69,9 +69,9 @@ impl Bvh {
     }
 }
 
-fn box_compare<'r, 's>(
-    a: &'r Arc<dyn Hittable>,
-    b: &'s Arc<dyn Hittable>,
+fn box_compare(
+    a: &Arc<dyn Hittable>,
+    b: &Arc<dyn Hittable>,
     axis: usize,
 ) -> Ordering {
     let (box_a, box_b) = match (a.bounding_box(0.0, 0.0), b.bounding_box(0.0, 0.0)) {
@@ -83,15 +83,15 @@ fn box_compare<'r, 's>(
         .unwrap()
 }
 
-fn box_x_compare<'r, 's>(a: &'r Arc<dyn Hittable>, b: &'s Arc<dyn Hittable>) -> Ordering {
+fn box_x_compare(a: &Arc<dyn Hittable>, b: &Arc<dyn Hittable>) -> Ordering {
     box_compare(a, b, 0)
 }
 
-fn box_y_compare<'r, 's>(a: &'r Arc<dyn Hittable>, b: &'s Arc<dyn Hittable>) -> Ordering {
+fn box_y_compare(a: &Arc<dyn Hittable>, b: &Arc<dyn Hittable>) -> Ordering {
     box_compare(a, b, 1)
 }
 
-fn box_z_compare<'r, 's>(a: &'r Arc<dyn Hittable>, b: &'s Arc<dyn Hittable>) -> Ordering {
+fn box_z_compare(a: &Arc<dyn Hittable>, b: &Arc<dyn Hittable>) -> Ordering {
     box_compare(a, b, 2)
 }
 
