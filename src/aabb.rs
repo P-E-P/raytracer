@@ -47,9 +47,7 @@ impl Aabb {
             let t1 = (self.max()[a] - ray.origin()[a]) * inv_d;
 
             if inv_d < 0.0 {
-                let tmp = t_min;
-                t_min = t_max;
-                t_max = tmp;
+                std::mem::swap(&mut t_min, &mut t_max)
             }
             t_min = if t0 > t_min { t0 } else { t_min };
             t_max = if t1 < t_max { t1 } else { t_max };
