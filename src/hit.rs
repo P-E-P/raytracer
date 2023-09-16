@@ -1,8 +1,7 @@
-use crate::aabb::Aabb;
+use crate::aabb::{Aabb, Interval};
 use crate::material::Material;
 use crate::ray::Ray;
 use crate::vec3::*;
-use std::sync::Arc;
 
 pub struct Hit<'a> {
     pub p: Point3,
@@ -36,6 +35,6 @@ impl<'a> Hit<'a> {
 }
 
 pub trait Hittable: Sync + Send {
-    fn hit(&self, ray: Ray, t_min: f64, t_max: f64) -> Option<Hit>;
-    fn bounding_box(&self, time0: f64, time1: f64) -> Option<Aabb>;
+    fn hit(&self, ray: Ray, ray_t: Interval) -> Option<Hit>;
+    fn bounding_box(&self) -> Aabb;
 }

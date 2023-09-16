@@ -1,5 +1,6 @@
 use crate::vec3::*;
-use aabb::Aabb;
+use aabb::{Aabb, Interval};
+use bvh::Bvh;
 use camera::Camera;
 use hit::{Hit, Hittable};
 use ray::Ray;
@@ -7,6 +8,7 @@ use render::{render, RenderSettings};
 use scene::*;
 use std::fs::File;
 use std::io::BufWriter;
+use std::sync::Arc;
 
 mod geometry;
 mod hit;
@@ -25,7 +27,9 @@ fn main() {
     let settings = RenderSettings::new(400, 16.0 / 9.0);
 
     // World
-    let world: Vec<Box<dyn Hittable>> = final_first();
+
+    let mut world = HittableList::new();
+    world.add(Arc::new(Bvh::new(final_first())));
 
     // Camera
     let look_from = point!(13.0, 2.0, 3.0);
@@ -66,13 +70,32 @@ fn colorize(color: Color, spp: usize) -> String {
     )
 }
 
-impl Hittable for Vec<Box<dyn Hittable>> {
-    fn hit(&self, ray: Ray, t_min: f64, t_max: f64) -> Option<Hit> {
-        let mut closest_so_far = t_max;
+struct HittableList {
+    objects: Vec<Arc<dyn Hittable>>,
+    bbox: Aabb,
+}
+
+impl HittableList {
+    pub fn new() -> Self {
+        HittableList {
+            objects: vec![],
+            bbox: Aabb::default(),
+        }
+    }
+
+    pub fn add(&mut self, object: Arc<dyn Hittable>) {
+        self.bbox = Aabb::surrounding(&self.bbox, &object.bounding_box());
+        self.objects.push(object);
+    }
+}
+
+impl Hittable for HittableList {
+    fn hit(&self, ray: Ray, ray_t: Interval) -> Option<Hit> {
+        let mut closest_so_far = ray_t.maximum;
         let mut result = None;
 
-        for object in self.iter() {
-            if let Some(hit) = object.hit(ray, t_min, closest_so_far) {
+        for object in &self.objects {
+            if let Some(hit) = object.hit(ray, Interval::new(ray_t.minimum, closest_so_far)) {
                 closest_so_far = hit.t;
                 result = Some(hit);
             }
@@ -81,27 +104,7 @@ impl Hittable for Vec<Box<dyn Hittable>> {
         result
     }
 
-    fn bounding_box(&self, time0: f64, time1: f64) -> Option<Aabb> {
-        if self.is_empty() {
-            return None;
-        }
-
-        let mut result: Option<Aabb> = None;
-
-        for object in self {
-            match object.bounding_box(time0, time1) {
-                Some(current) => match result {
-                    Some(previous) => {
-                        result = Some(Aabb::surrounding(&previous, &current));
-                    }
-                    None => {
-                        result = Some(current);
-                    }
-                },
-                None => return None,
-            }
-        }
-
-        result
+    fn bounding_box(&self) -> Aabb {
+        self.bbox
     }
 }

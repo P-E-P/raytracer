@@ -1,9 +1,11 @@
+use crate::aabb::Interval;
 use crate::ray::Ray;
 use crate::vec3::unit_vector;
 use crate::Camera;
 use crate::Color;
 use crate::Hittable;
-use indicatif::{HumanDuration, ProgressBar, ProgressStyle};
+use crate::HittableList;
+use indicatif::{ProgressBar, ProgressStyle};
 use rand::distributions::{Distribution, Uniform};
 use rayon::prelude::*;
 
@@ -43,7 +45,7 @@ impl Default for RenderSettings {
     }
 }
 
-pub fn render(world: &Vec<Box<dyn Hittable>>, cam: &Camera, settings: &RenderSettings) -> Vec<u8> {
+pub fn render(world: &HittableList, cam: &Camera, settings: &RenderSettings) -> Vec<u8> {
     let bar = &Box::new(ProgressBar::new(
         (settings.image_width * settings.image_height) as u64,
     ));
@@ -95,7 +97,7 @@ fn ray_color(ray: Ray, world: &impl Hittable, depth: usize) -> Color {
         return Color::default();
     }
 
-    if let Some(hit) = world.hit(ray, 0.001, f64::INFINITY) {
+    if let Some(hit) = world.hit(ray, Interval::new(0.001, f64::INFINITY)) {
         if let Some((scattered, attenuation)) = hit.material.scatter(&ray, &hit) {
             return attenuation * ray_color(scattered, world, depth - 1);
         }

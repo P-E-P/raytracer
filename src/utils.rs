@@ -15,28 +15,6 @@ where
     }
 }
 
-pub fn min<T>(input1: T, input2: T) -> T
-where
-    T: PartialOrd<T>,
-{
-    if input1 < input2 {
-        input1
-    } else {
-        input2
-    }
-}
-
-pub fn max<T>(input1: T, input2: T) -> T
-where
-    T: PartialOrd<T>,
-{
-    if input1 > input2 {
-        input1
-    } else {
-        input2
-    }
-}
-
 pub fn random<T>(r: RangeInclusive<T>) -> T
 where
     T: SampleUniform,
