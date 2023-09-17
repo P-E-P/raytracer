@@ -21,25 +21,59 @@ mod camera;
 mod material;
 mod render;
 mod scene;
+mod texture;
 mod utils;
 
 fn main() {
-    let settings = RenderSettings::new(400, 16.0 / 9.0);
+    let settings = RenderSettings::default(); //new(400, 16.0 / 9.0);
 
-    // World
+    let selection = 2;
+    let pixels = match selection {
+        0 => {
+            let mut world = HittableList::new();
+            world.add(Arc::new(Bvh::new(final_first())));
 
-    let mut world = HittableList::new();
-    world.add(Arc::new(Bvh::new(final_first())));
+            // Camera
+            let look_from = point!(13.0, 2.0, 3.0);
+            let look_at = point!(0.0, 0.0, 0.0);
 
-    // Camera
-    let look_from = point!(13.0, 2.0, 3.0);
-    let look_at = point!(0.0, 0.0, 0.0);
+            let cam = camera::Builder::new(look_from, look_at, 20.0, 0.1, 10.0)
+                .timed(0.0, 1.0)
+                .build();
 
-    let cam = camera::Builder::new(look_from, look_at, 20.0, 0.1, 10.0)
-        .timed(0.0, 1.0)
-        .build();
+            render(&world, &cam, &settings)
+        }
 
-    let pixels = render(&world, &cam, &settings);
+        1 => {
+            let mut world = HittableList::new();
+            world.add(Arc::new(Bvh::new(random_scene())));
+
+            // Camera
+            let look_from = point!(13.0, 2.0, 3.0);
+            let look_at = point!(0.0, 0.0, 0.0);
+
+            let cam = camera::Builder::new(look_from, look_at, 20.0, 0.1, 10.0)
+                .timed(0.0, 1.0)
+                .build();
+
+            render(&world, &cam, &settings)
+        }
+        2 => {
+            let mut world = HittableList::new();
+            world.add(Arc::new(Bvh::new(two_sphere())));
+
+            // Camera
+            let look_from = point!(13.0, 2.0, 3.0);
+            let look_at = point!(0.0, 0.0, 0.0);
+
+            let cam = camera::Builder::new(look_from, look_at, 20.0, 0.1, 10.0)
+                .tilted(vec3!(0.0, 1.0, 0.0))
+                .build();
+
+            render(&world, &cam, &settings)
+        }
+        _ => unimplemented!(),
+    };
 
     let file = File::create("test.png").unwrap();
     let writer = BufWriter::new(file);

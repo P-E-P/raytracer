@@ -39,8 +39,8 @@ impl Default for RenderSettings {
             aspect_ratio,
             image_width,
             image_height,
-            sample_per_pixel: 100,
-            max_depth: 50,
+            sample_per_pixel: 300,
+            max_depth: 300,
         }
     }
 }
